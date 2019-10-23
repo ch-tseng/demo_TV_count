@@ -6,6 +6,7 @@ import time, sys
 from PIL import ImageFont, ImageDraw, Image
 from libGreen import webCam
 from libGreen import OBJTracking
+from operator import itemgetter, attrgetter
 
 yolo = opencvYOLO(modeltype="yolov3", imgsize=(416,416), \
     objnames="obj.names", \
@@ -108,6 +109,9 @@ def exit_app():
     CAMERA.stop_record()
     sys.exit(0)
 
+def sortList(e):
+  return e[0]
+
 frameID = 0
 total_count = 0
 re_recognize = True
@@ -138,6 +142,7 @@ if __name__ == "__main__":
         #print("YOLO detect: ", ob_classes, ob_bboxes, ob_scores)
 
         need_tracking_bboxes, need_tracking_classes, need_tracking_scores = [], [], []
+        print_num_list = []
         for i, bbox in enumerate(ob_bboxes):
             cx, cy = bbox[0]+int(bbox[2]/2), bbox[1]+int(bbox[3]/2)
             point_color = bg[cy, cx]
@@ -149,8 +154,12 @@ if __name__ == "__main__":
                 need_tracking_scores.append(ob_scores[i])
 
             if(cx<count_line_x):
-                frame_org = printText("TV #"+str(total_count), frame_org, color=(0,255,255,0), size=2.0, pos=(bbox[0]+int(bbox[2]/2),bbox[1]-30), type="Chinese")
+                print_num_list.append(bbox)
+                #frame_org = printText("TV #"+str(total_count), frame_org, color=(0,255,255,0), size=2.0, pos=(bbox[0]+int(bbox[2]/2),bbox[1]-30), type="Chinese")
 
+        print_num_list.sort(key=sortList, reverse=True)
+        for i, print_box in enumerate(print_num_list):
+            frame_org = printText("TV #"+str(total_count-i), frame_org, color=(0,255,255,0), size=2.0, pos=(print_box[0]+int(print_box[2]/2),print_box[1]-30), type="Chinese")
 
         #YOLOBBOX與目前的 Tracking結果比較，有多的表示為新增ROI。
         new_object = False
