@@ -1,0 +1,5 @@
+classes= 1
+train  = cfg.green_tv/train.txt
+valid  = cfg.green_tv/test.txt
+names = cfg.green_tv/obj.names
+backup = cfg.green_tv/weights/
